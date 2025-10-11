@@ -1,4 +1,4 @@
-export const onRequest: PagesFunction = async ({ request }) => {
+export async function onRequest({ request }: any) {
   // Basic security headers
   const security = {
     'x-content-type-options': 'nosniff',

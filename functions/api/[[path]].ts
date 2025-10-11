@@ -1,4 +1,4 @@
-export const onRequest: PagesFunction = async ({ request, env }) => {
+export async function onRequest({ request, env }: any) {
   // Env must provide WORKER_URL, e.g., https://your-worker.your-subdomain.workers.dev
   const workerBase = env.WORKER_URL
   if (typeof workerBase !== 'string' || !workerBase.startsWith('http')) {
