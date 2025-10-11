@@ -56,10 +56,17 @@ export async function apiFetch<T = unknown, TBody = unknown>(
   if (method !== 'GET') {
     if (options.body !== undefined && options.body !== null) {
       // Prefer JSON
-      headers['content-type'] = headers['content-type'] || 'application/json; charset=utf-8'
-      body = headers['content-type'].includes('application/json')
-        ? JSON.stringify(options.body)
-        : (options.body as unknown as BodyInit)
+      // If FormData/Blob/ArrayBuffer, let browser set the correct content-type
+      if ((typeof FormData !== 'undefined' && options.body instanceof FormData) ||
+          (typeof Blob !== 'undefined' && options.body instanceof Blob) ||
+          (typeof ArrayBuffer !== 'undefined' && options.body instanceof ArrayBuffer)) {
+        body = options.body as unknown as BodyInit
+      } else {
+        headers['content-type'] = headers['content-type'] || 'application/json; charset=utf-8'
+        body = headers['content-type'].includes('application/json')
+          ? JSON.stringify(options.body)
+          : (options.body as unknown as BodyInit)
+      }
     }
   }
 
