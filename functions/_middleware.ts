@@ -19,5 +19,20 @@ export async function onRequest({ request }: any) {
   }
 
   // Continue
-  return undefined as any // allow request to proceed to next function/asset
+  try {
+    return undefined as any // allow request to proceed to next function/asset
+  } catch (e) {
+    const security = {
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'DENY',
+      'referrer-policy': 'no-referrer',
+    }
+    return new Response(null, {
+      status: 500,
+      headers: {
+        ...security,
+        'access-control-allow-origin': '*',
+      },
+    })
+  }
 }

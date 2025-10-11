@@ -2,7 +2,7 @@ export async function onRequest({ request, env }: any) {
   // Env must provide WORKER_URL, e.g., https://your-worker.your-subdomain.workers.dev
   const workerBase = env.WORKER_URL
   if (typeof workerBase !== 'string' || !workerBase.startsWith('http')) {
-    return new Response(JSON.stringify({ error: 'WORKER_URL not configured' }), {
+    return new Response(JSON.stringify({error: 'WORKER_URL not configured'}), {
       status: 500,
       headers: {
         'content-type': 'application/json; charset=utf-8',
@@ -14,12 +14,12 @@ export async function onRequest({ request, env }: any) {
   const url = new URL(request.url)
   const apiPrefix = '/api'
   const pathAfterApi = url.pathname.startsWith(apiPrefix)
-    ? url.pathname.substring(apiPrefix.length)
-    : url.pathname
+      ? url.pathname.substring(apiPrefix.length)
+      : url.pathname
   // Ensure single slash joining
   const targetUrl = new URL(
-    pathAfterApi.replace(/^\/+/, ''),
-    workerBase.endsWith('/') ? workerBase : workerBase + '/',
+      pathAfterApi.replace(/^\/+/, ''),
+      workerBase.endsWith('/') ? workerBase : workerBase + '/',
   )
   targetUrl.search = url.search
 
@@ -27,9 +27,9 @@ export async function onRequest({ request, env }: any) {
   const method = request.method.toUpperCase()
   const safeMethods = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
   if (!safeMethods.has(method)) {
-    return new Response(JSON.stringify({ error: 'Unsupported method' }), {
+    return new Response(JSON.stringify({error: 'Unsupported method'}), {
       status: 405,
-      headers: { 'content-type': 'application/json; charset=utf-8' },
+      headers: {'content-type': 'application/json; charset=utf-8'},
     })
   }
 
@@ -77,7 +77,7 @@ export async function onRequest({ request, env }: any) {
     }
 
     if (method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: corsHeaders })
+      return new Response(null, {status: 204, headers: corsHeaders})
     }
 
     const mergedHeaders = new Headers(resp.headers)
@@ -89,9 +89,9 @@ export async function onRequest({ request, env }: any) {
     })
   } catch (err) {
     const isAbort = err instanceof Error && (err.name === 'AbortError')
-    return new Response(JSON.stringify({ error: isAbort ? 'Upstream timeout' : 'Upstream error' }), {
+    return new Response(JSON.stringify({error: isAbort ? 'Upstream timeout' : 'Upstream error'}), {
       status: isAbort ? 504 : 502,
-      headers: { 'content-type': 'application/json; charset=utf-8', 'access-control-allow-origin': '*' },
+      headers: {'content-type': 'application/json; charset=utf-8', 'access-control-allow-origin': '*'},
     })
   }
 }
