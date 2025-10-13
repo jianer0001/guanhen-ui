@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { apiFetch } from '@/api/http'
 
 const file = ref<File | null>(null)
 const loading = ref(false)
@@ -48,7 +49,23 @@ async function onSubmit() {
     return
   }
   loading.value = true
-
+  try {
+    const form = new FormData()
+    form.append('file', file.value)
+    const res = await apiFetch<any, FormData>('/file/parse-excel', {
+      method: 'POST',
+      body: form,
+    })
+    if (res.ok) {
+      result.value = res.data ?? { message: '解析成功，无数据返回' }
+    } else {
+      error.value = res.error || `解析失败，状态码 ${res.status}`
+    }
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : '未知错误'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
