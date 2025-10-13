@@ -1,4 +1,4 @@
-export async function onRequest({ request }: any) {
+export async function onRequest({ request, next }: any) {
   // Basic security headers
   const security = {
     'x-content-type-options': 'nosniff',
@@ -6,6 +6,7 @@ export async function onRequest({ request }: any) {
     'referrer-policy': 'no-referrer',
   }
 
+  // CORS preflight
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       status: 204,
@@ -18,15 +19,10 @@ export async function onRequest({ request }: any) {
     })
   }
 
-  // Continue
+  // Continue to next function or static asset
   try {
-    return undefined as any // allow request to proceed to next function/asset
+    return await next()
   } catch (e) {
-    const security = {
-      'x-content-type-options': 'nosniff',
-      'x-frame-options': 'DENY',
-      'referrer-policy': 'no-referrer',
-    }
     return new Response(null, {
       status: 500,
       headers: {
